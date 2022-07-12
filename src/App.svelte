@@ -1,27 +1,41 @@
 <script>  
-  import logo from './assets/svelte.png'
-  import Counter from './lib/Counter.svelte'
 
-  let texto = "Here is the data!"
+  import {onMount} from 'svelte'
+  import MovieItem from './Movie/Item.svelte'
+
+  const APIKEY = '29ed1d64cc3508c30f08131eb1860d99'
+  const BASEURL = 'https://api.themoviedb.org/3'
+  const APISETTINGS = `?api_key=${APIKEY}&language=es-MX`
+
+  let movies = []
+
+  function fetchMovies (){
+    const URL = `${BASEURL}/discover/movie${APISETTINGS}&sort_by=popularity.desc`
+
+    fetch(URL).then(res => res.json()).then(({results}) =>{movies =  results})
+
+  }
+
+  onMount(()=>{
+    console.log('Component has been mounted!')
+    fetchMovies()
+  })
 
 </script>
 
-<main>
-  <img src={logo} alt="Svelte Logo" />
-  <h1>Hello world!</h1>
-  <h5>{texto}</h5>
-  <input type="text" bind:value = {texto} />
-  <Counter />
+<svelte:head>
+  <title>App Movies with Svelte</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</svelte:head>
 
-  <p>
-    Visit <a href="https://svelte.dev">svelte.dev</a> to learn how to build Svelte
-    apps.
-  </p>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme">SvelteKit</a> for
-    the officially supported framework, also powered by Vite!
-  </p>
+<main class="container">
+  <div class="row">
+    {#each movies as movie}
+      <div class="col-12 col-md-6 col-lg-3 p-1">
+        <MovieItem></MovieItem>
+      </div>
+    {/each}
+  </div>
 </main>
 
 <style>
